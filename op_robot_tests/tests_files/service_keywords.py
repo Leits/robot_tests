@@ -3,7 +3,7 @@ from datetime import timedelta
 from dateutil.parser import parse
 from dpath.util import set as xpathset
 from iso8601 import parse_date
-from json import load
+from json import load, dumps
 from jsonpath_rw import parse as parse_path
 from munch import fromYAML, Munch, munchify
 from robot.errors import HandlerExecutionFailed
