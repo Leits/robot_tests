@@ -1,0 +1,60 @@
+*** Settings ***
+Library         op_robot_tests.tests_files.service_keywords
+Library         OperatingSystem
+Library         String
+Library         Collections
+Library         Selenium2Library
+Library         DebugLibrary
+Resource        keywords.robot
+Resource        resource.robot
+Suite Setup     TestSuiteSetup
+Suite Teardown  Close all browsers
+
+*** Variables ***
+${mode}         multi
+${tender_id}    0
+${question_id}  0
+
+${role}         viewer
+${broker}       Quinta
+
+*** Test Cases ***
+Отримання даних про тендер з артефакту
+  [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
+  Підготовка початкових даних
+  ${tender_info}=  get_tender_info_from_artifact  op_robot_tests/tests_files/tender_owner.json
+  Log  ${tender_info}
+  Set To Dictionary  ${USERS.users['${tender_owner}']}  initial_data  ${tender_info['INIT_DATA']}
+  Set To Dictionary  ${USERS.users['${tender_owner}']}  access_token  ${tender_info['TOKEN']}
+  Set To Dictionary  ${TENDER}   TENDER_UAID             ${tender_info['TENDER_UAID']}
+  Set To Dictionary  ${TENDER}   LAST_MODIFICATION_DATE  ${tender_info['LAST_MODIFICATION_DATE']}
+  Log  ${TENDER}
+
+Пошук тендера по ідентифікатору
+  [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
+  Дочекатись синхронізації з майданчиком    ${viewer}
+  Викликати для учасника   ${tender_owner}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+  Викликати для учасника   ${viewer}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+
+Можливість подати скаргу на умови
+  [Tags]   ${USERS.users['${provider}'].broker}: Можливість подати скаргу на умови
+  [Documentation]    Користувач  ${USERS.users['${provider}'].broker}  намагається подати скаргу на умови оголошеної  закупівлі
+  Викликати для учасника   ${provider}   Подати скаргу    ${TENDER['TENDER_UAID']}   ${COMPLAINTS[0]}
+  ${LAST_MODIFICATION_DATE}=  Get Current TZdate
+  Set Global Variable   ${LAST_MODIFICATION_DATE}
+
+Можливість побачити скаргу користувачем
+  [Tags]   ${USERS.users['${provider}'].broker}: Відображення основних даних оголошеного тендера
+  Викликати для учасника   ${provider}   Порівняти скаргу  ${TENDER['TENDER_UAID']}   ${COMPLAINTS[0]}
+
+Можливість побачити скаргу анонімом
+  [Tags]   ${USERS.users['${viewer}'].broker}: Відображення основних даних оголошеного тендера
+  Викликати для учасника    ${viewer}  Порівняти скаргу  ${TENDER['TENDER_UAID']}   ${COMPLAINTS[0]}
+
+Можливість скасувати скаргу на умови
+  [Tags]   ${USERS.users['${tender_owner}'].broker}: Можливість скасувати скаргу на умови
+  Set To Dictionary  ${COMPLAINTS[0].data}   status   cancelled
+  Set To Dictionary  ${COMPLAINTS[0].data}   cancellationReason   test_draft_cancellation
+  Викликати для учасника   ${provider}     Обробити скаргу    ${TENDER['TENDER_UAID']}  0  ${COMPLAINTS[0]}
+  log many   ${COMPLAINTS[0]}
+  викликати для учасника   ${viewer}   Оновити сторінку з тендером   ${TENDER['TENDER_UAID']}
