@@ -18,15 +18,23 @@ ${role}         viewer
 ${broker}       Quinta
 
 *** Test Cases ***
-Пошук тендера по ідентифікатору
+Отримання даних про тендер з артефакту
   [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
-  ${file}=  Get File  op_robot_tests/tests_files/tender_owner.json
-  ${tender}=  jsonloads   ${file}
-  Set To Dictionary  ${USERS.users['${tender_owner}']}  initial_data  ${tender['INIT_DATA']}
+  ${tender_info}=  get_tender_info_from_artifact  op_robot_tests/tests_files/tender_owner.json
+  Log  ${tender_info}
+  Set To Dictionary  ${USERS.users['${tender_owner}']}  initial_data  ${tender_info['INIT_DATA']}
+  Set To Dictionary  ${USERS.users['${tender_owner}']}  access_token  ${tender_info['TOKEN']}
   ${TENDER}=  Create Dictionary
   Set Global Variable  ${TENDER}
-  Set To Dictionary  ${TENDER}   TENDER_UAID             ${tender['TENDER_UAID']}
-  Set To Dictionary  ${TENDER}   LAST_MODIFICATION_DATE  ${tender['LAST_MODIFICATION_DATE']}
+  Set To Dictionary  ${TENDER}   TENDER_UAID             ${tender_info['TENDER_UAID']}
+  Set To Dictionary  ${TENDER}   LAST_MODIFICATION_DATE  ${tender_info['LAST_MODIFICATION_DATE']}
+  Log  ${TENDER}
+
+Пошук тендера по ідентифікатору
+  [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
+  Дочекатись синхронізації з майданчиком    ${viewer}
+  Викликати для учасника   ${tender_owner}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+  Викликати для учасника   ${viewer}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
 
 Можливість редагувати багатопредметний тендер
   [Tags]   ${USERS.users['${tender_owner}'].broker}: Можливість оголосити тендер
@@ -38,4 +46,6 @@ ${broker}       Quinta
 
 Можливість видалити позиції закупівлі тендера
   [Tags]   ${USERS.users['${tender_owner}'].broker}: Можливість оголосити тендер
+  ${tender1}=   Викликати для учасника   ${tender_owner}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+  Log  ${tender1}
   Викликати для учасника   ${tender_owner}   Відняти предмети закупівлі   ${TENDER['TENDER_UAID']}   2

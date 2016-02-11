@@ -3,7 +3,7 @@ from datetime import timedelta
 from dateutil.parser import parse
 from dpath.util import set as xpathset
 from iso8601 import parse_date
-from json import load, dumps
+from json import load, dumps, loads
 from jsonpath_rw import parse as parse_path
 from munch import fromYAML, Munch, munchify
 from robot.errors import HandlerExecutionFailed
@@ -257,3 +257,10 @@ def convert_datetime_to_dot_format(isodate):
 
 def local_path_to_file(file_name):
     return os.path.join(os.path.dirname(__file__), 'documents', file_name)
+
+
+def get_tender_info_from_artifact(path_to_file):
+    with open(path_to_file, 'r') as json:
+        artifact= json.read()
+        tender_info = munchify(loads(artifact))
+    return tender_info

@@ -11,7 +11,7 @@ Suite Setup     TestSuiteSetup
 Suite Teardown  Close all browsers
 
 *** Variables ***
-${mode}         single
+${mode}         multi
 
 ${role}         viewer
 ${broker}       Quinta
@@ -32,9 +32,12 @@ ${question_id}  0
 
 Пошук тендера по ідентифікатору
   [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
-  #Дочекатись синхронізації з майданчиком    ${viewer}
-  #Викликати для учасника   ${viewer}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+  Дочекатись синхронізації з майданчиком    ${viewer}
+  Викликати для учасника   ${viewer}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
 
+Створити артефакт
+  [Tags]   ${USERS.users['${viewer}'].broker}: Створення артефакту
+  [Documentation]   Створення артефакту з унікальними данними (owner_token, tender_init_data, uid)
   Set To Dictionary  ${TENDER}   TOKEN   ${USERS.users['${tender_owner}'].access_token}
   Set To Dictionary  ${TENDER}   INIT_DATA   ${USERS.users['${tender_owner}'].initial_data}
   ${json}=   dumps   ${TENDER}
