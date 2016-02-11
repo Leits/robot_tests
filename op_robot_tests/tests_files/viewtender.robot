@@ -20,12 +20,11 @@ ${broker}       Quinta
 *** Test Cases ***
 Отримання даних про тендер з артефакту
   [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
+  Підготовка початкових даних
   ${tender_info}=  get_tender_info_from_artifact  op_robot_tests/tests_files/tender_owner.json
   Log  ${tender_info}
   Set To Dictionary  ${USERS.users['${tender_owner}']}  initial_data  ${tender_info['INIT_DATA']}
   Set To Dictionary  ${USERS.users['${tender_owner}']}  access_token  ${tender_info['TOKEN']}
-  ${TENDER}=  Create Dictionary
-  Set Global Variable  ${TENDER}
   Set To Dictionary  ${TENDER}   TENDER_UAID             ${tender_info['TENDER_UAID']}
   Set To Dictionary  ${TENDER}   LAST_MODIFICATION_DATE  ${tender_info['LAST_MODIFICATION_DATE']}
   Log  ${TENDER}
