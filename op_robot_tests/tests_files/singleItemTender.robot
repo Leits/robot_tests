@@ -22,6 +22,7 @@ ${question_id}  0
   [Tags]   ${USERS.users['${tender_owner}'].broker}: Можливість оголосити тендер
   ...      tender_owner
   ...      ${USERS.users['${tender_owner}'].broker}
+  ...      minimal
   [Documentation]   Створення закупівлі замовником, обовязково має повертати UAID закупівлі (номер тендера),
   ${tender_data}=  Підготовка початкових даних
   ${TENDER_UAID}=  Викликати для учасника  ${tender_owner}  Створити тендер  ${tender_data}
@@ -45,10 +46,13 @@ ${question_id}  0
 
 Можливість знайти однопредметний тендер по ідентифікатору
   [Tags]   ${USERS.users['${viewer}'].broker}: Пошук тендера по ідентифікатору
-  ...      viewer
-  ...      ${USERS.users['${viewer}'].broker}
+  ...      viewer  provider  provider1
+  ...      ${USERS.users['${viewer}'].broker}  ${USERS.users['${provider}'].broker}  ${USERS.users['${provider1}'].broker}
+  ...      minimal
   Дочекатись синхронізації з майданчиком    ${viewer}
   Викликати для учасника   ${viewer}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+  Викликати для учасника   ${provider}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
+  Викликати для учасника   ${provider1}   Пошук тендера по ідентифікатору   ${TENDER['TENDER_UAID']}
 
 ######
 #Відображення основних  даних оголошеного тендера:
@@ -59,6 +63,7 @@ ${question_id}  0
   [Tags]   ${USERS.users['${viewer}'].broker}: Відображення основних даних оголошеного тендера
   ...      viewer
   ...      ${USERS.users['${viewer}'].broker}
+  ...      minimal
   Звірити поле тендера  ${viewer}  ${USERS.users['${tender_owner}'].initial_data}  title
 
 Відображення опису оголошеного тендера
@@ -95,18 +100,21 @@ ${question_id}  0
   [Tags]   ${USERS.users['${viewer}'].broker}: Відображення основних даних оголошеного тендера
   ...      viewer
   ...      ${USERS.users['${viewer}'].broker}
+  ...      minimal
   Звірити дату тендера  ${viewer}  ${USERS.users['${tender_owner}'].initial_data}  enquiryPeriod.endDate
 
 Відображення початку періоду прийому пропозицій оголошеного тендера
   [Tags]   ${USERS.users['${viewer}'].broker}: Відображення основних даних оголошеного тендера
   ...      viewer
   ...      ${USERS.users['${viewer}'].broker}
+  ...      minimal
   Звірити дату тендера  ${viewer}  ${USERS.users['${tender_owner}'].initial_data}  tenderPeriod.startDate
 
 Відображення закінчення періоду прийому пропозицій оголошеного тендера
   [Tags]   ${USERS.users['${viewer}'].broker}: Відображення основних даних оголошеного тендера
   ...      viewer
   ...      ${USERS.users['${viewer}'].broker}
+  ...      minimal
   Звірити дату тендера  ${viewer}  ${USERS.users['${tender_owner}'].initial_data}  tenderPeriod.endDate
 
 Відображення мінімального кроку оголошеного тендера
@@ -299,7 +307,7 @@ ${question_id}  0
   [Tags]   ${USERS.users['${provider}'].broker}: Можливість подати цінову пропозицію
   ...      provider
   ...      ${USERS.users['${provider}'].broker}
-  Дочекатись дати початку прийому пропозицій
+  Дочекатись дати початку прийому пропозицій   ${provider}
   ${bid}=  test bid data
   Log  ${bid}
   ${biddingresponse0}=  Викликати для учасника   ${provider}   Подати цінову пропозицію   ${TENDER['TENDER_UAID']}   ${bid}
@@ -316,11 +324,14 @@ ${question_id}  0
   [Tags]   ${USERS.users['${provider}'].broker}: Можливість подати цінову пропозицію
   ...      provider
   ...      ${USERS.users['${provider}'].broker}
-  Дочекатись дати початку прийому пропозицій
+  ...      minimal
+  Дочекатись дати початку прийому пропозицій   ${provider}
   ${bid}=  test bid data
   Log  ${bid}
   ${resp}=  Викликати для учасника   ${provider}   Подати цінову пропозицію   ${TENDER['TENDER_UAID']}   ${bid}
-  Set To Dictionary  ${USERS.users['${provider}'].bidresponses}   resp   ${resp}
+  ${bidresponses}=  Create Dictionary
+  Set To Dictionary  ${bidresponses}   resp   ${resp}
+  Set To Dictionary  ${USERS.users['${provider}']}   bidresponses   ${bidresponses}
   log  ${resp}
   log  ${USERS.users['${provider}'].bidresponses}
 
@@ -376,7 +387,8 @@ ${question_id}  0
   [Tags]   ${USERS.users['${provider1}'].broker}: Можливість подати цінову пропозицію
   ...      provider1
   ...      ${USERS.users['${provider1}'].broker}
-  Дочекатись дати початку прийому пропозицій
+  ...      minimal
+  Дочекатись дати початку прийому пропозицій   ${provider1}
   ${bid}=  test bid data
   Log  ${bid}
   ${bidresponses}=  Create Dictionary
@@ -407,7 +419,7 @@ ${question_id}  0
   [Tags]   ${USERS.users['${provider1}'].broker}: Неможливість змінити цінову пропозицію до 50000 після закінчення прийому пропозицій
   ...      provider1
   ...      ${USERS.users['${provider1}'].broker}
-  Дочекатись дати закінчення прийому пропозицій
+  Дочекатись дати закінчення прийому пропозицій   ${provider1}
   Set To Dictionary  ${USERS.users['${provider1}'].bidresponses['resp'].data.value}  amount   50000
   Log   ${USERS.users['${provider1}'].bidresponses['resp'].data.value}
   ${failfixbidto50000resp}=  Викликати для учасника   ${provider1}   Змінити цінову пропозицію  shouldfail  ${TENDER['TENDER_UAID']}   ${USERS.users['${provider1}'].bidresponses['resp']}
@@ -452,6 +464,7 @@ ${question_id}  0
   [Tags]  ${USERS.users['${viewer}'].broker}: Можливість подати цінову пропозицію
   ...     viewer
   ...     ${USERS.users['${viewer}'].broker}
+  ...     minimal
   Sleep  120
   ${url}=  Викликати для учасника  ${viewer}  Отримати посилання на аукціон для глядача  ${TENDER['TENDER_UAID']}
   Log  URL аукціону для глядача: ${url}
@@ -460,6 +473,7 @@ ${question_id}  0
   [Tags]  ${USERS.users['${provider}'].broker}: Можливість подати цінову пропозицію
   ...     provider
   ...     ${USERS.users['${provider}'].broker}
+  ...     minimal
   ${url}=  Викликати для учасника  ${provider}  Отримати посилання на аукціон для учасника  ${TENDER['TENDER_UAID']}
   Log  URL аукціону для першого учасника: ${url}
 
@@ -467,5 +481,6 @@ ${question_id}  0
   [Tags]  ${USERS.users['${provider1}'].broker}: Можливість подати цінову пропозицію
   ...     provider1
   ...     ${USERS.users['${provider1}'].broker}
+  ...     minimal
   ${url}=  Викликати для учасника  ${provider1}  Отримати посилання на аукціон для учасника  ${TENDER['TENDER_UAID']}
   Log  URL аукціону для другого учасника: ${url}
