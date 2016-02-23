@@ -10,13 +10,13 @@ Default:
             - 31
     timeout_on_wait: 300 # Time in seconds
 Quinta:
-#    intervals:
-#        enquiry:
-#            - 0
-#            - 2
-#        tender:
-#            - 0
-#            - 5
+    intervals:
+        enquiry:
+            - 0
+            - 2
+        tender:
+            - 0
+            - 2
     keywords_file: openprocurement_client
     roles:
         tender_owner:   Tender_Owner

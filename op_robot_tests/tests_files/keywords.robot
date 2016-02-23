@@ -251,3 +251,13 @@ SwitchState
   [Arguments]  ${username}
   log  ${username}
   Дочекатись дати  ${USERS.users['${username}'].tender_data.data.auctionPeriod.endDate}
+
+Дочекатись дати початку кваліфікації
+  [Arguments]  ${username}
+  log  ${username}
+  Дочекатись дати  ${USERS.users['${username}'].tender_data.data.auctionPeriod.endDate}
+
+Дочекатись дати закінчення кваліфікації
+  [Arguments]  ${username}
+  log  ${username}
+  Дочекатись дати  ${USERS.users['${username}'].tender_data.data.auctionPeriod.endDate}

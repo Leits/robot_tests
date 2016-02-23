@@ -788,3 +788,20 @@ def test_lot_complaint_data(complaint, lot_id="3c8f387879de4c38957402dbdb8b31af"
     lot_complaint = {"complaintOf": "lot", "relatedItem": lot_id}
     lot_complaint.update(complaint.data)
     return munchify({"data": lot_complaint})
+
+def test_open_eu_tender_data(t_data):
+    now = get_now()
+    t_data['data']['procurementMethodType'] = 'aboveThresholdEU'
+    t_data['data']['title_en'] = "[TESTING]"
+    for item_number, item in enumerate(t_data['data']['items']):
+        item['description_en'] = "Test item #{}".format(item_number)
+    t_data['data']['procuringEntity']['contactPoint']['name_en'] = fake_en.name()
+    t_data['data']['procuringEntity']['contactPoint']['availableLanguage'] = "Ukraine"
+    t_data['data']['procuringEntity']['identifier']['legalName_en'] = "Institution \"Vinnytsia City Council primary and secondary general school № 10\""
+    t_data['data']['procurementMethodDetails'] = 'quick, accelerator=2880'
+    t_data['data']["tenderPeriod"] = {
+        "startDate": (now).isoformat(),
+        "endDate": (now + timedelta(minutes=15)).isoformat()
+    }
+    del t_data['data']["enquiryPeriod"]
+    return t_data

@@ -77,6 +77,7 @@ Library  openprocurement_client_helper.py
   [Arguments]  ${username}  ${tender_uid}  ${fieldname}  ${fieldvalue}
   ${tender}=  openprocurement_client.Пошук тендера по ідентифікатору  ${username}  ${tender_uid}
   Set_To_Object  ${tender.data}   ${fieldname}   ${fieldvalue}
+  Remove From Dictionary  ${tender.data}  enquiryPeriod
   ${tender}=  set_access_key  ${tender}  ${USERS.users['${username}'].access_token}
   ${tender}=  Call Method  ${USERS.users['${username}'].client}  patch_tender  ${tender}
   Set_To_Object   ${USERS.users['${username}'].tender_data}   ${fieldname}   ${fieldvalue}
@@ -417,4 +418,16 @@ Library  openprocurement_client_helper.py
   ${data}=  confirm contract  ${tender['data']['contracts'][${contract_num}]['id']}
   Log  ${data}
   ${reply}=  Call Method  ${USERS.users['${username}'].client}  patch_contract  ${tender}  ${data}
+  Log  ${reply}
+
+
+##############################################################################
+#             OpenUA procedure
+##############################################################################
+
+Підтвердити кваліфікацію
+  [Arguments]  ${username}
+  ${tender}=  openprocurement_client.Пошук тендера по ідентифікатору  ${username}  ${tender_uid}
+  Log  ${data}
+  ${reply}=  Call Method  ${USERS.users['${username}'].client}  patch_qualification  ${tender}  ${data}
   Log  ${reply}
