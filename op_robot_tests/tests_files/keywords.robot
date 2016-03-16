@@ -264,7 +264,6 @@ Get Broker Property By Username
   Log  ${left}
   Log  ${right}
   Порівняти об'єкти  ${left}  ${right}
-  Set_To_Object  ${USERS.users['${username}'].tender_data.data}  ${field}  ${left}
 
 
 Порівняти об'єкти
@@ -336,6 +335,25 @@ Get Broker Property By Username
   ...      Log  Keyword 'Викликати для учасника' is deprecated. Please use 'Run As' and 'Require Failure' instead.
   ...      WARN
   Run Keyword And Return  Run As  ${username}  ${command}  @{arguments}
+
+Отримати дані із тендера
+  [Arguments]  ${username}  ${field_name}
+  Log  ${username}
+  Log  ${field_name}
+
+  ${status}  ${field_value}=  Run keyword and ignore error
+  ...      Get from object
+  ...      ${USERS.users['${username}'].tender_data.data}
+  ...      ${field_name}
+  # If field in cache, return its value
+  Run Keyword if  '${status}' == 'PASS'  Return from keyword   ${field_value}
+  # Else call broker to find field
+  ${field_value}=  Викликати для учасника  ${username}  Отримати інформацію із тендера  ${field}
+  # And caching its value before return
+  Set_To_Object  ${USERS.users['${username}'].tender_data.data}  ${field}  ${field_value}
+  [return]  ${field_value}
+
+
 
 
 Run As
