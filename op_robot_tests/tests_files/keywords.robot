@@ -259,8 +259,8 @@ Get Broker Property By Username
 
 
 Звірити поле тендера із значенням
-  [Arguments]  ${username}  ${left}  ${field}
-  ${right}=  Викликати для учасника  ${username}  Отримати інформацію із тендера  ${field}
+  [Arguments]  ${username}  ${left}  ${field}    ${object_id}=${FALSE}
+  ${right}=  Отримати дані із тендера  ${username}  ${field}  ${object_id}
   Log  ${left}
   Log  ${right}
   Порівняти об'єкти  ${left}  ${right}
@@ -323,6 +323,11 @@ Get Broker Property By Username
   \  Звірити дату тендера  ${viewer}  ${tender_data}  items[${index}].${field}
 
 
+Отримати ідентифікатор об’єкту
+  [Arguments]  ${field}
+  Run Keyword And Return  get_id_from_field  ${field}
+
+
 Викликати для учасника
   [Arguments]  ${username}  ${command}  @{arguments}
   Run keyword unless  '${WARN_RUN_AS}' == '${True}'
@@ -337,7 +342,7 @@ Get Broker Property By Username
   Run Keyword And Return  Run As  ${username}  ${command}  @{arguments}
 
 Отримати дані із тендера
-  [Arguments]  ${username}  ${field_name}
+  [Arguments]  ${username}  ${field_name}  ${object_id}=${FALSE}
   Log  ${username}
   Log  ${field_name}
 
@@ -348,7 +353,7 @@ Get Broker Property By Username
   # If field in cache, return its value
   Run Keyword if  '${status}' == 'PASS'  Return from keyword   ${field_value}
   # Else call broker to find field
-  ${field_value}=  Викликати для учасника  ${username}  Отримати інформацію із тендера  ${field}
+  ${field_value}=  Викликати для учасника  ${username}  Отримати інформацію із тендера  ${field}  ${object_id}
   # And caching its value before return
   Set_To_Object  ${USERS.users['${username}'].tender_data.data}  ${field}  ${field_value}
   [return]  ${field_value}

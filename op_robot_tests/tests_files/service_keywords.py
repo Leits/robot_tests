@@ -338,6 +338,10 @@ def munch_dict(arg=None, data=False):
     return munchify(arg)
 
 
+def get_id_from_field(field):
+    return field.split(":")[0]
+
+
 # GUI Frontends common
 def add_data_for_gui_frontends(tender_data):
     now = get_now()

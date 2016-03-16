@@ -64,7 +64,7 @@ Library  openprocurement_client_helper.py
 
 
 Отримати інформацію із тендера
-  [Arguments]  ${username}  ${field_name}
+  [Arguments]  ${username}  ${field_name}  ${object_id}=${FALSE}
   Log  ${username}
   Log  ${field_name}
 
