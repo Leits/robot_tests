@@ -168,6 +168,10 @@ Get Broker Property By Username
   ...          tender_owner=${USERS.users['${tender_owner}'].broker}
   ...          access_token=${USERS.users['${tender_owner}'].access_token}
   ...          tender_id=${USERS.users['${tender_owner}'].tender_data.data.id}
+  Run Keyword And Ignore Error  Set To Dictionary  ${artifact}  tender_owner_cache=${USERS.users['${tender_owner}'].tender_data}
+  Run Keyword And Ignore Error  Set To Dictionary  ${artifact}  viewer_cache=${USERS.users['${viewer}'].tender_data}
+  Run Keyword And Ignore Error  Set To Dictionary  ${artifact}  provider_cache=${USERS.users['${provider}'].tender_data}
+  Run Keyword And Ignore Error  Set To Dictionary  ${artifact}  provider1_cache=${USERS.users['${provider1}'].tender_data}
   ${status}  ${lots_ids}=  Run Keyword And Ignore Error  Отримати ідентифікатори об’єктів  ${viewer}  lots
   Run Keyword If  ${status}'=='PASS'
   ...      Set To Dictionary   ${artifact}   lots=${lots_ids}
@@ -183,6 +187,10 @@ Get Broker Property By Username
   ${lot_index}=  Get Variable Value  ${lot_index}  0
   Run Keyword And Ignore Error  Set To Dictionary  ${TENDER}  LOT_ID=${ARTIFACT.lots[${lot_index}]}
   ${mode}=  Get Variable Value  ${mode}  ${ARTIFACT.mode}
+  Run Keyword And Ignore Error  Set To Dictionary  ${USERS.users['${tender_owner}'].tender_data}  tender_data=${ARTIFACT.tender_owner_cache}
+  Run Keyword And Ignore Error  Set To Dictionary  ${USERS.users['${viewer}'].tender_data}  tender_data=${ARTIFACT.viewer_cache}
+  Run Keyword And Ignore Error  Set To Dictionary  ${USERS.users['${provider}'].tender_data}  tender_data=${ARTIFACT.provider_cache}
+  Run Keyword And Ignore Error  Set To Dictionary  ${USERS.users['${provider1}'].tender_data}  tender_data=${ARTIFACT.provider1_cache}
   Set Suite Variable  ${mode}
   Set Suite Variable  ${lot_index}
   Set Suite Variable  ${TENDER}
@@ -237,7 +245,8 @@ Get Broker Property By Username
 
 
 Підготувати дані для подання пропозиції
-  ${supplier_data}=  test_bid_data  ${mode}
+  [Arguments]  ${number_of_lots}=0
+  ${supplier_data}=  test_bid_data  ${mode}  ${number_of_lots}
   [Return]  ${supplier_data}
 
 

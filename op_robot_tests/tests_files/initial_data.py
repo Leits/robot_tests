@@ -431,7 +431,7 @@ def test_complaint_reply_data():
     })
 
 
-def test_bid_data(mode):
+def test_bid_data(mode, number_of_lots):
     bid = munchify({
         "data": {
             "tenderers": [
@@ -461,9 +461,9 @@ def test_bid_data(mode):
     if 'open' in mode:
         bid.data['selfEligible'] = True
         bid.data['selfQualified'] = True
-    if mode == 'multiLot':
+    if mode == 'with_lots':
         bid.data.lotValues = list()
-        for _ in range(2):
+        for _ in range(number_of_lots):
             bid.data.lotValues.append(test_bid_value())
     else:
         bid.data.update(test_bid_value())

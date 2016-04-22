@@ -294,7 +294,7 @@ def prepare_test_tender_data(procedure_intervals, mode):
         return munchify({'data': test_tender_data_meat(intervals)})
     elif mode == 'multiItem':
         return munchify({'data': test_tender_data_multiple_items(intervals)})
-    elif mode == 'multiLot':
+    elif mode == 'with_lots':
         return munchify({'data': test_tender_data_multiple_lots(intervals)})
     elif mode == 'negotiation':
         return munchify({'data': test_tender_data_limited(intervals, 'negotiation')})
@@ -306,7 +306,7 @@ def prepare_test_tender_data(procedure_intervals, mode):
         return munchify({'data': test_tender_data_openua(intervals)})
     elif mode == 'reporting':
         return munchify({'data': test_tender_data_limited(intervals, 'reporting')})
-    elif mode == 'single':
+    elif mode == 'without_lots':
         return munchify({'data': test_tender_data(intervals)})
     raise ValueError("Invalid mode for prepare_test_tender_data")
 

@@ -115,7 +115,7 @@ Library  openprocurement_client_helper.py
 
 
 Видалити предмет закупівлі
-  [Arguments]  ${username}  ${tender_uaid}  ${item_id}
+  [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${lot_id}=${None}
   ${tender}=  openprocurement_client.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   ${item_index}=  get_object_index_by_id  ${tender.data['items']}  ${item_id}
   Remove From List  ${tender.data['items']}  ${item_index}
