@@ -88,6 +88,17 @@ Resource           resource.robot
 Звірити відображення координат ${item_index} предмету для користувача ${username}
   Звірити координати доставки тендера  ${viewer}  ${USERS.users['${tender_owner}'].initial_data}  items[${item_index}]
 
+
+Отримати дані із поля ${field} тендера для усіх користувачів
+  :FOR  ${username}  IN  ${viewer}  ${provider}  ${provider1}  ${tender_owner}
+  \  Отримати дані із поля ${field} тендера для користувача ${username}
+
+
+Отримати дані із поля ${field} тендера для користувача ${username}
+  Отримати дані із тендера  ${username}  ${field}
+
+
+
 ##############################################################################################
 #             LOTS
 ##############################################################################################
@@ -246,6 +257,92 @@ Resource           resource.robot
 
 Звірити відображення поля ${field} запитання для користувача ${username}
   Звірити поле тендера із значенням  ${username}  ${USERS.users['${provider}'].question_data.question.data.${field}}  ${field}  ${USERS.users['${provider}'].question_data.question_id}
+
+##############################################################################################
+#             COMPLAINTS
+##############################################################################################
+
+Можливість створити вимогу про виправлення умов закупівлі, додати до неї документацію і подати її користувачем ${username}
+  ${claim}=  Підготувати дані для подання вимоги
+  ${document}=  create_fake_doc
+  ${complaintID}=  Викликати для учасника  ${username}
+  ...      Створити вимогу
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${claim}
+  ...      ${document}
+  ${claim_data}=  Create Dictionary  claim=${claim}  complaintID=${complaintID}  document=${document}
+  Set To Dictionary  ${USERS.users['${username}']}  claim_data  ${claim_data}
+
+
+Можливість створити чернетку вимоги про виправлення умов закупівлі і скасувати її користувачем ${username}
+  ${claim}=  Підготувати дані для подання вимоги
+  ${complaintID}=  Викликати для учасника  ${username}
+  ...      Створити чернетку вимоги
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${claim}
+  ${claim_data}=  Create Dictionary  claim=${claim}  complaintID=${complaintID}
+  Set To Dictionary  ${USERS.users['${username}']}  claim_data  ${claim_data}
+
+  ${cancellation_reason}=  create_fake_sentence
+  ${data}=  Create Dictionary  status=cancelled  cancellationReason=${cancellation_reason}
+  ${cancellation_data}=  Create Dictionary  data=${data}
+  Викликати для учасника  ${username}
+  ...      Скасувати вимогу
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${USERS.users['${username}']['claim_data']['complaintID']}
+  ...      ${cancellation_data}
+  Set To Dictionary  ${USERS.users['${username}'].claim_data}  cancellation  ${cancellation_data}
+
+
+Можливість створити, подати і скасувати вимогу про виправлення умов закупівлі користувачем ${username}
+  ${claim}=  Підготувати дані для подання вимоги
+  ${document}=  create_fake_doc
+  ${complaintID}=  Викликати для учасника  ${username}
+  ...      Створити вимогу
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${claim}
+  ...      ${document}
+
+  ${cancellation_reason}=  create_fake_sentence
+  ${data}=  Create Dictionary  status=cancelled  cancellationReason=${cancellation_reason}
+  ${cancellation_data}=  Create Dictionary  data=${data}
+  Викликати для учасника  ${username}
+  ...      Скасувати вимогу
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${USERS.users['${username}']['claim_data']['complaintID']}
+  ...      ${cancellation_data}
+  Set To Dictionary  ${USERS.users['${username}'].claim_data}  cancellation  ${cancellation_data}
+
+
+Звірити відображення поля ${field} вимоги із ${data} для користувача ${username}
+  Звірити поле скарги із значенням  ${username}
+  ...      ${data}
+  ...      ${field}
+  ...      ${USERS.users['${username}'].claim_data['complaintID']}
+
+
+Можливість відповісти на вимогу про виправлення умов закупівлі
+  ${answer_data}=  test_claim_answer_data
+  Log  ${answer_data}
+  Викликати для учасника  ${tender_owner}
+  ...      Відповісти на вимогу
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${USERS.users['${provider}']['claim_data']['complaintID']}
+  ...      ${answer_data}
+  ${claim_data}=  Create Dictionary  claim_answer=${answer_data}
+  Set To Dictionary  ${USERS.users['${tender_owner}']}  claim_data  ${claim_data}
+
+
+Можливість підтвердити задоволення вимоги про виправлення умов закупівлі користувачем ${username}
+  ${data}=  Create Dictionary  status=resolved  satisfied=${True}
+  ${confirmation_data}=  Create Dictionary  data=${data}
+  Викликати для учасника  ${provider}
+  ...      Підтвердити вирішення вимоги
+  ...      ${TENDER['TENDER_UAID']}
+  ...      ${USERS.users['${provider}']['claim_data']['complaintID']}
+  ...      ${confirmation_data}
+  Set To Dictionary  ${USERS.users['${provider}']['claim_data']}  claim_answer_confirm  ${confirmation_data}
+
 
 ##############################################################################################
 #             BIDDING
