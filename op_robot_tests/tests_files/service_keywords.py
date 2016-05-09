@@ -164,9 +164,12 @@ def log_object_data(data, file_name=None, format="yaml", update=False):
     if not isinstance(data, Munch):
         data = munchify(data)
     if file_name:
+        data_obj = munch_to_object(data, format)
         output_dir = BuiltIn().get_variable_value("${OUTPUT_DIR}")
         file_path = os.path.join(output_dir, file_name + '.' + format)
         if update:
+            artifact_dir = BuiltIn().get_variable_value("${EXECDIR}")
+            file_path = os.path.join(artifact_dir, 'op_robot_tests/tests_files/data', file_name + '.' + format)
             try:
                 with open(file_path, "r+") as file_obj:
                     new_data = data.copy()
@@ -178,9 +181,11 @@ def log_object_data(data, file_name=None, format="yaml", update=False):
                 LOGGER.log_message(Message(e, "INFO"))
                 LOGGER.log_message(Message("Nothing to update, "
                                            "creating new file.", "INFO"))
-        data_obj = munch_to_object(data, format)
-        with open(file_path, "w") as file_obj:
-            file_obj.write(data_obj)
+                with open(file_path, "w") as file_obj:
+                    file_obj.write(data_obj)
+        else:
+            with open(file_path, "w") as file_obj:
+                file_obj.write(data_obj)
     data_obj = munch_to_object(data, format)
     LOGGER.log_message(Message(data_obj.decode('utf-8'), "INFO"))
 

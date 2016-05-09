@@ -176,12 +176,15 @@ Get Broker Property By Username
   Run Keyword If  '${status}'=='PASS'
   ...      Set To Dictionary   ${artifact}   lots=${lots_ids}
   Log   ${artifact}
-  log_object_data  ${artifact}  artifact  update=${True}
+  ${artifact}=  munch_dict  arg=${artifact}
+  Set Global Variable  ${artifact}
+  # log_object_data  ${artifact}  artifact  update=${True}
 
 
 Завантажити дані про тендер
-  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
-  ${ARTIFACT}=  load_data_from  ${file_path}
+  # ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  # ${ARTIFACT}=  load_data_from  ${file_path}
+
   Run Keyword And Ignore Error  Set To Dictionary  ${USERS.users['${tender_owner}']}  access_token=${ARTIFACT.access_token}
   ${TENDER}=  Create Dictionary   TENDER_UAID=${ARTIFACT.tender_uaid}   LAST_MODIFICATION_DATE=${ARTIFACT.last_modification_date}   LOT_ID=${Empty}
   ${lot_index}=  Get Variable Value  ${lot_index}  0
@@ -633,6 +636,16 @@ Require Failure
   ...      ${date}
   ${date}=  add_minutes_to_date  ${date}  2  # Auction sync
   Дочекатись дати  ${date}
+  Оновити LAST_MODIFICATION_DATE
+  Дочекатись синхронізації з майданчиком  ${username}
+
+
+Дочекатись дати початку аукціону
+  [Arguments]  ${username}
+  # Can't use that dirty hack here since we don't know
+  # the date of auction when creating the procurement :)
+  ${auctionStart}=  Отримати дані із тендера   ${username}   auctionPeriod.startDate  ${TENDER['LOT_ID']}
+  Дочекатись дати  ${auctionStart}
   Оновити LAST_MODIFICATION_DATE
   Дочекатись синхронізації з майданчиком  ${username}
 

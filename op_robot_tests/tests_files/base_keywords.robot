@@ -400,3 +400,25 @@ Resource           resource.robot
 
 Можливість скасувати цінову пропозицію користувачем ${username}
   ${canceledbidresp}=  Run As  ${username}  Скасувати цінову пропозицію  ${TENDER['TENDER_UAID']}
+
+##############################################################################################
+#             AUCTION
+##############################################################################################
+
+Можливість вичитати посилання на аукціон для ${username}
+  ${url}=  Run As  ${username}  Отримати посилання на аукціон для глядача  ${TENDER['TENDER_UAID']}  ${TENDER['LOT_ID']}
+  Should Be True  '${url}'
+  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.openprocurement\.org\/tenders\/([0-9A-Fa-f]{32})
+  Log  URL аукціону для глядача: ${url}
+
+
+Відкрити сторінку аукціону для ${username}
+  ${url}=  Run as  ${username}  Отримати посилання на аукціон для глядача  ${TENDER['TENDER_UAID']}  ${TENDER['LOT_ID']}
+  Open browser  ${url}  ${USERS.users['${username}'].browser}
+
+
+Дочекатись дати закінчення аукціону користувачем ${username}
+  Відкрити сторінку аукціону для ${username}
+  Wait Until Keyword Succeeds  61 times  30 s  Page should contain  Аукціон завершився
+  Wait Until Keyword Succeeds  5 times  30 s  Page should not contain  очікуємо розкриття учасників
+  Close browser
