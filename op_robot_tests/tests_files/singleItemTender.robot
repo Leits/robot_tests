@@ -103,12 +103,12 @@ ${mode}         single
   ...      value.valueAddedTaxIncluded
 
 
-Відображення tenderID однопредметного тендера
+Відображення auctionID однопредметного тендера
   [Tags]   ${USERS.users['${viewer}'].broker}: Відображення основних даних тендера
   ...      viewer
   ...      ${USERS.users['${viewer}'].broker}
   ...      level2
-  Звірити поле тендера із значенням  ${viewer}  ${TENDER['TENDER_UAID']}  tenderID
+  Звірити поле тендера із значенням  ${viewer}  ${TENDER['TENDER_UAID']}  auctionID
 
 
 Відображення procuringEntity.name однопредметного тендера
@@ -461,24 +461,24 @@ ${mode}         single
   Log  ${USERS.users['${provider}'].bidresponses}
 
 
-Можливість змінити повторну цінову пропозицію до 50000
+Можливість змінити повторну цінову пропозицію до 90000
   [Tags]   ${USERS.users['${provider}'].broker}: Подання пропозиції
   ...      provider
   ...      ${USERS.users['${provider}'].broker}
   [Teardown]  Оновити LAST_MODIFICATION_DATE
-  ${fixbidto50000resp}=  Викликати для учасника  ${provider}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  50000
-  Set To Dictionary  ${USERS.users['${provider}'].bidresponses}  fixbidto50000resp=${fixbidto50000resp}
-  Log  ${fixbidto50000resp}
+  ${fixbidto90000resp}=  Викликати для учасника  ${provider}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  90000
+  Set To Dictionary  ${USERS.users['${provider}'].bidresponses}  fixbidto90000resp=${fixbidto90000resp}
+  Log  ${fixbidto90000resp}
 
 
-Можливість змінити повторну цінову пропозицію до 10
+Можливість змінити повторну цінову пропозицію до 50001
   [Tags]   ${USERS.users['${provider}'].broker}: Подання пропозиції
   ...      provider
   ...      ${USERS.users['${provider}'].broker}
   [Teardown]  Оновити LAST_MODIFICATION_DATE
-  ${fixbidto10resp}=  Викликати для учасника  ${provider}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  10
-  Set To Dictionary  ${USERS.users['${provider}'].bidresponses}  fixbidto10resp=${fixbidto10resp}
-  Log  ${fixbidto10resp}
+  ${fixbidto50001resp}=  Викликати для учасника  ${provider}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  50001
+  Set To Dictionary  ${USERS.users['${provider}'].bidresponses}  fixbidto50001resp=${fixbidto50001resp}
+  Log  ${fixbidto50001resp}
 
 
 Можливість завантажити документ першим учасником в повторну пропозицію
@@ -554,23 +554,23 @@ ${mode}         single
   Set To Dictionary  ${USERS.users['${provider1}'].bidresponses}  bid_doc_upload=${bid_doc_upload}
 
 
-Неможливість змінити цінову пропозицію до 50000 після закінчення прийому пропозицій
+Неможливість змінити цінову пропозицію до 90000 після закінчення прийому пропозицій
   [Tags]   ${USERS.users['${provider1}'].broker}: Подання пропозиції
   ...      provider1
   ...      ${USERS.users['${provider1}'].broker}
   [Setup]  Дочекатись дати закінчення прийому пропозицій  ${provider1}
-  ${failfixbidto50000resp}=  Require Failure  ${provider1}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  50000
-  Set To Dictionary  ${USERS.users['${provider1}'].bidresponses}  failfixbidto50000resp=${failfixbidto50000resp}
-  Log  ${failfixbidto50000resp}
+  ${failfixbidto90000resp}=  Require Failure  ${provider1}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  90000
+  Set To Dictionary  ${USERS.users['${provider1}'].bidresponses}  failfixbidto90000resp=${failfixbidto90000resp}
+  Log  ${failfixbidto90000resp}
 
 
-Неможливість змінити цінову пропозицію до 1 після закінчення прийому пропозицій
+Неможливість змінити цінову пропозицію до 50001 після закінчення прийому пропозицій
   [Tags]   ${USERS.users['${provider1}'].broker}: Подання пропозиції
   ...      provider1
   ...      ${USERS.users['${provider1}'].broker}
-  ${failfixbidto1resp}=  Require Failure  ${provider1}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  1
-  Set To Dictionary  ${USERS.users['${provider1}'].bidresponses}  failfixbidto1resp=${failfixbidto1resp}
-  Log  ${failfixbidto1resp}
+  ${failfixbidto50001resp}=  Require Failure  ${provider1}  Змінити цінову пропозицію  ${TENDER['TENDER_UAID']}  value.amount  50001
+  Set To Dictionary  ${USERS.users['${provider1}'].bidresponses}  failfixbidto50001resp=${failfixbidto50001resp}
+  Log  ${failfixbidto50001resp}
 
 
 Неможливість скасувати цінову пропозицію після закінчення прийому пропозицій
@@ -609,7 +609,7 @@ ${mode}         single
   [Setup]  Дочекатись дати закінчення прийому пропозицій  ${viewer}
   ${url}=  Викликати для учасника  ${viewer}  Отримати посилання на аукціон для глядача  ${TENDER['TENDER_UAID']}
   Should Be True  '${url}'
-  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.openprocurement\.org\/tenders\/([0-9A-Fa-f]{32})
+  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.ea\.openprocurement\.org\/auctions\/([0-9A-Fa-f]{32})
   Log  URL аукціону для глядача: ${url}
 
 
@@ -621,7 +621,7 @@ ${mode}         single
   [Setup]  Дочекатись синхронізації з майданчиком  ${provider}
   ${url}=  Викликати для учасника  ${provider}  Отримати посилання на аукціон для учасника  ${TENDER['TENDER_UAID']}
   Should Be True  '${url}'
-  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.openprocurement\.org\/tenders\/([0-9A-Fa-f]{32})
+  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.ea\.openprocurement\.org\/auctions\/([0-9A-Fa-f]{32})
   Log  URL аукціону для першого учасника: ${url}
 
 
@@ -633,5 +633,5 @@ ${mode}         single
   [Setup]  Дочекатись синхронізації з майданчиком  ${provider1}
   ${url}=  Викликати для учасника  ${provider1}  Отримати посилання на аукціон для учасника  ${TENDER['TENDER_UAID']}
   Should Be True  '${url}'
-  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.openprocurement\.org\/tenders\/([0-9A-Fa-f]{32})
+  Should Match Regexp  ${url}  ^https?:\/\/auction(?:-sandbox)?\.ea\.openprocurement\.org\/auctions\/([0-9A-Fa-f]{32})
   Log  URL аукціону для другого учасника: ${url}
